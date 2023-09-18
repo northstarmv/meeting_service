@@ -1,0 +1,13 @@
+{
+    "meeting": {
+        "add": [
+            "client", "trainer"
+        ],"reserved_time": [
+            "client", "trainer"
+        ],"my_meetings": [
+            "client", "trainer"
+        ],"hold_user": [
+            "therapy"
+        ]
+    }
+}
