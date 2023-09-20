@@ -36,7 +36,7 @@ class Therapy_Meetings_Controller extends Controller
                 if(!$request->has('additional')){ $request->input('additional', ''); } 
 
                 //check therapy exist
-                $current_therapy = user_therapy::select('paying_type','session_duration')
+                $current_therapy = user_therapy::select('paying_type','session_duration', 'working_type')
                     ->where('id', $validatedData['therapy_id'])
                     ->get()->first();
                 
@@ -232,7 +232,7 @@ class Therapy_Meetings_Controller extends Controller
                 if(!$request->has('additional')){ $request->input('additional', ''); } 
 
                 //check therapy exist
-                $current_therapy = user_therapy::select('paying_type','session_duration', 'working_type')
+                $current_therapy = user_therapy::select("id",'paying_type','session_duration', 'working_type')
                     ->where('user_id',  $request["auth"]["id"])
                     ->get()->first();
 
@@ -301,7 +301,7 @@ class Therapy_Meetings_Controller extends Controller
          
                 //check therpy time range and given time range is ok
                 $working_hours_therapy = TherapyWorkingHours::select('start_time','end_time')
-                    ->where('therapy_id', $request["auth"]["id"])
+                    ->where('therapy_id', $current_therapy->id)
                     ->where('day', $date_day)
                     ->where('rest_day','=', 0)
                     ->get()->first();
@@ -333,7 +333,7 @@ class Therapy_Meetings_Controller extends Controller
                     }
 
                 //check time is overlaping
-                $Time_validate = DB::table('therapy__meetings')->where('therapy_id','=', $request["auth"]["id"])->where('apt_date','=', $validatedData['apt_date'])
+                $Time_validate = DB::table('therapy__meetings')->where('therapy_id','=', $current_therapy->id)->where('apt_date','=', $validatedData['apt_date'])
                 ->where(function ($query) use ($validatedData) {
                     $query->whereRaw('TIME(start_time) <= ? AND TIME(end_time) > ?', [$validatedData['start_time'], $validatedData['start_time']])
                         ->orWhereRaw('TIME(start_time) < ? AND TIME(end_time) >= ?', [$validatedData['end_time'], $validatedData['end_time']])
@@ -356,7 +356,7 @@ class Therapy_Meetings_Controller extends Controller
                 $dateTime = Carbon::now('UTC')->format('Y-m-d H:i:s');
                 $User = Therapy_Meetings::create([
                     'user_id' => $client->id,
-                    'therapy_id' =>$request["auth"]["id"],
+                    'therapy_id' =>$current_therapy->id,
                     'apt_date' => $validatedData['apt_date'],
                     'start_time' => $validatedData['start_time'],
                     'end_time' =>  $validatedData['end_time'],
@@ -467,4 +467,49 @@ class Therapy_Meetings_Controller extends Controller
         }      
             
     }
+
+    public function meeting_list(Request $request): JsonResponse
+    {
+
+        try {
+
+            $validatedData = $this->validate($request, [
+                'apt_date' => 'date|nullable'
+            ]);
+
+            if(!$request->has('apt_date')){ $request->input('apt_date', ''); } 
+            if(!$request->get('apt_date') === null){ $request->input('apt_date', ''); } 
+
+            $current_user = user_therapy::select('id')->where('user_id','=',  $request["auth"]["id"])->first();
+            if( !$current_user){
+                return response()->json(
+                    [
+                        ResponseHelper::error("0053")
+                    ], 200
+                    );
+            }
+
+            $meetings =Therapy_Meetings::select('apt_date','start_time', 'end_time', 'reason', 'additional','users.name', 'users.email')
+            ->join('users', 'users.id', '=', 'therapy__meetings.user_id')
+            ->where('therapy__meetings.therapy_id', '=', $current_user->id)
+            ->where('status','=','1')
+            ->where('apt_date', 'like', '%' . $request->get('apt_date') . '%')
+            ->get();
+
+            return response()->json([
+                ResponseHelper::success("200", [
+                    'domain' => env('AWS_URL'),
+                    'result' => $meetings
+                ],"success")
+                    
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(
+                [
+                    ResponseHelper::error("0000",$e)
+                ], 200
+                );
+        }
+    }
+
 }

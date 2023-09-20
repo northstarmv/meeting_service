@@ -8,6 +8,9 @@
             "client", "trainer"
         ],"hold_user": [
             "therapy"
+        ],
+        "therapy_meetings":[
+            "therapy"
         ]
     }
 }

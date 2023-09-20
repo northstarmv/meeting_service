@@ -62,6 +62,7 @@ $router->post('/new-client-therapy-hold', [ 'middleware' => 'auth.check:meeting,
 $router->post('/new-client-therapy-meeting', [ 'middleware' => 'auth.check:meeting,add', 'uses' => 'Therapy_Meetings_Controller@add']);
 $router->post('/reserved-times', [ 'middleware' => 'auth.check:meeting,reserved_time', 'uses' => 'Therapy_Meetings_Controller@reserved_time']);
 $router->get('/my-meetings', [ 'middleware' => 'auth.check:meeting,my_meetings', 'uses' => 'Therapy_Meetings_Controller@my_meetings']);
+$router->post('/therapy-meetings', [ 'middleware' => 'auth.check:meeting,therapy_meetings', 'uses' => 'Therapy_Meetings_Controller@meeting_list']);
 
 $router->post('/voice-call/actions/invoke', 'NotificationsController@callInvoker');
 $router->post('/voice-call/actions/rtcToken', 'RtcTokenGenerator@Generate');
