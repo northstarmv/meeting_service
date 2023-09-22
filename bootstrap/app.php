@@ -33,6 +33,7 @@ $app->configure('app');
 $app->configure('zoom');
 $app->configure('onesignal');
 $app->configure('database');
+$app->configure('filesystems');
 
 /*
 |--------------------------------------------------------------------------
@@ -72,6 +73,7 @@ $app->register(MacsiDigital\Zoom\Providers\ZoomServiceProvider::class);
 $app->register(IClimber\LaravelZoomMeetings\LaravelZoomMeetingsServiceProvider::class);
 $app->register(Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
 $app->register(Berkayk\OneSignal\OneSignalServiceProvider::class);
+
 class_alias(Berkayk\OneSignal\OneSignalFacade::class,'OneSignal');
 
 $app->router->group([

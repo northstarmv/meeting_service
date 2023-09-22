@@ -7,6 +7,7 @@
     "require": {
         "php": "^7.3|^8.0",
         "ext-json": "*",
+        "aws/aws-sdk-php": "^3.281",
         "berkayk/onesignal-laravel": "^1.0",
         "ezyang/htmlpurifier": "^4.16",
         "flipbox/lumen-generator": "^8.2",
@@ -14,6 +15,7 @@
         "iclimber/laravel-zoom-meetings": "^2.0",
         "laravel/lumen-framework": "^8.3.1",
         "league/flysystem": "1.1",
+        "league/flysystem-aws-s3-v3": "^1.0",
         "macsidigital/laravel-zoom": "^5.0",
         "yasserbelhimer/agora-access-token-generator": "^1.0"
     },
